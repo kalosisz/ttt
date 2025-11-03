@@ -1,0 +1,41 @@
+# .github/workflows/bot-commit.yml
+
+name: Create Verified Bot Commit with Timestamp
+
+on:
+  workflow_dispatch:
+
+jobs:
+  create-bot-commit:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: 1. Checkout code
+        uses: actions/checkout@v4
+
+      - name: 2. Configure Git User
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      # --- This step has been updated ---
+      - name: 3. Create a file and commit
+        run: |
+          # Generate a standard UTC timestamp
+          TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+
+          # Create a new file and add the timestamp to its content
+          echo "This commit was created by a GitHub Action at $TIMESTAMP" > bot-file.md
+
+          # Add the new file to staging
+          git add bot-file.md
+
+          # Commit the changes, adding the timestamp to the commit message
+          git commit -m "feat: Add file via automated workflow at $TIMESTAMP"
+
+      - name: 4. Push changes
+        run: |
+          git push
